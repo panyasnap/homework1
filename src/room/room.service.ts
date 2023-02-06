@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { HotelRoom } from './schemas/hotelRoom.schemas';
 import { HotelService } from 'src/hotel/hotel.service';
 import { CreateHotelRoomDTo } from './dto/create.hotel.room.dto';
@@ -13,8 +13,7 @@ export class RoomService {
   constructor(
     @InjectModel(HotelRoom.name)
     private hotelRoomModel: Model<HotelRoom>,
-    private hotelService: HotelService,
-    @InjectConnection() private connection: Connection,
+    private hotelService: HotelService
   ) {}
 
   async create(data: CreateHotelRoomDTo, file: File[]) {
@@ -40,7 +39,9 @@ export class RoomService {
   async getHotelRooms(params, user: User | null) {
     const skip = Number(params.offset) || 0;
     const limit = Number(params.limit) || 6;
-    const findOptions: any = { hotel: { _id: params.hotel } }; // TODO убрать any. Прописать тип
+    const findOptions: FilterQuery<HotelRoom> = {
+      hotel: { _id: params.hotel },
+    };
 
     if (user?.role === Role.Client) {
       findOptions.isEnabled = true;

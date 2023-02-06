@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { TID } from 'src/room/interfaces/hotel.room.interfaces';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { ISearchParams } from './interfaces/search.params.interface';
@@ -8,10 +8,7 @@ import { User, UserDocument } from './schemas/user.schemas';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
   async create(data: Partial<CreateUserDTO>) {
     const newUser = new this.UserModel(data);
@@ -36,6 +33,7 @@ export class UsersService {
 
     try {
       return await this.UserModel.find({
+        lastName: params.lastName,
         email: params.email,
         contactPhone: params.contactPhone,
       })

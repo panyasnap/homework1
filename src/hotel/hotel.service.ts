@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { AddHotelParamsDTO } from './dto/add.hotel.params.dto';
 import { UpdateHotelParamsDTO } from './dto/update.hotel.params.dto';
 import { IFindSearchParams } from './interfaces/find-search.params.interface';
@@ -8,10 +8,7 @@ import { Hotel } from './schemas/hotel.schemas';
 
 @Injectable()
 export class HotelService {
-  constructor(
-    @InjectModel(Hotel.name) private hotelModel: Model<Hotel>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Hotel.name) private hotelModel: Model<Hotel>) {}
 
   async addHotel(addHotelDTO: AddHotelParamsDTO) {
     const newHotel = new this.hotelModel(addHotelDTO);
@@ -33,7 +30,7 @@ export class HotelService {
   }
 
   async updateHotel(updateHotelParamsDTO: UpdateHotelParamsDTO, id: string) {
-    return await this.hotelModel.findByIdAndUpdate(id, updateHotelParamsDTO, {
+    return this.hotelModel.findByIdAndUpdate(id, updateHotelParamsDTO, {
       new: true,
     });
   }

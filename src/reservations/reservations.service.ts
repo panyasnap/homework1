@@ -3,14 +3,11 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { RoomService } from 'src/room/room.service';
 import { TID } from 'src/room/interfaces/hotel.room.interfaces';
-import { HotelRoom } from 'src/room/schemas/hotelRoom.schemas';
-import { Role } from 'src/users/enums/roles.enum';
 import { User } from 'src/users/schemas/user.schemas';
 import { ReservationDto } from './dto/reservation.dto';
 import { Reservations } from './schemas/reservations.schemas';
@@ -21,7 +18,6 @@ export class ReservationsService {
     @InjectModel(Reservations.name)
     private reservationsModel: Model<Reservations>,
     private hotelRoomService: RoomService,
-    @InjectConnection() private connection: Connection,
   ) {}
 
   async addReservation(data: ReservationDto, id: TID) {
@@ -89,8 +85,6 @@ export class ReservationsService {
   async removeManagerReservation(id: TID) {
     try {
       const room = await this.reservationsModel.findById(id);
-
-      /** 400 - если брони с указанным ID не существует */
       if (!room) throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
 
       return await this.reservationsModel.deleteOne({ _id: id });
@@ -99,9 +93,15 @@ export class ReservationsService {
     }
   }
 
-  async getUserReservations(userId: string) {
+  async getUserReservations(userId: string, dateStart: Date, dateEnd: Date) {
     try {
-      return await this.reservationsModel.find({ userId });
+      return await this.reservationsModel.find({
+        userId,
+        createdAt: {
+          $lte: new Date(dateEnd),
+          $gte: new Date(dateStart),
+        },
+      });
     } catch (error) {
       return error;
     }

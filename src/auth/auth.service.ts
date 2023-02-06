@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { LoginDTO } from './dto/login.dto';
@@ -43,7 +42,7 @@ export class AuthService {
       return error;
     }
   }
-  /** Todo прописать type для user. на ID ругается */
+
   private async generateToken(user: any) {
     const payload = {
       email: user.email,

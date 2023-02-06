@@ -72,9 +72,15 @@ export class ReservationsController {
   @UseGuards(new RolesGuard([Role.Manager]))
   @UseGuards(JwtAuthGuard)
   @Get('/api/manager/reservations/:userId')
-  async getUserReservations(@Param() param: { userId: string }) {
+  async getUserReservations(
+    @Param() param: { userId: string; dateStart: Date; dateEnd: Date },
+  ) {
     try {
-      return await this.reservationsService.getUserReservations(param.userId);
+      return await this.reservationsService.getUserReservations(
+        param.userId,
+        param.dateStart,
+        param.dateEnd,
+      );
     } catch (error) {
       return error;
     }

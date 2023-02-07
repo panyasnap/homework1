@@ -13,7 +13,7 @@ export class RoomService {
   constructor(
     @InjectModel(HotelRoom.name)
     private hotelRoomModel: Model<HotelRoom>,
-    private hotelService: HotelService
+    private hotelService: HotelService,
   ) {}
 
   async create(data: CreateHotelRoomDTo, file: File[]) {
@@ -45,6 +45,10 @@ export class RoomService {
 
     if (user?.role === Role.Client) {
       findOptions.isEnabled = true;
+    }
+
+    if (!params.isEnabled) {
+      delete findOptions.isEnabled;
     }
 
     try {
